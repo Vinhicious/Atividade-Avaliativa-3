@@ -1,0 +1,157 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+typedef struct Produto{
+  char des[50];
+  int qtd;
+  float preco;
+  int cod;
+  struct Produto *prox;
+}Produto;
+
+Produto* criarListaVazia(){
+  return NULL;
+}
+
+Produto* addProduto(){
+    Produto *novoProduto = (Produto*)malloc(sizeof(Produto));
+    if(novoProduto == NULL){
+      printf("Erro de alocação");
+      exit(EXIT_FAILURE);
+    }
+    novoProduto->prox = NULL;
+    return novoProduto;
+}
+Produto* adicionar(Produto *lista){
+    Produto *novoProduto = addProduto();
+    printf("\nDigite o codigo do produto: ");
+    scanf("%d", &novoProduto->cod);
+    printf("\nInforme a descrição do produto: ");
+    fflush(stdin);
+    fgets(novoProduto->des, sizeof(novoProduto->des), stdin);
+    printf("\nDigite a quantidade: ");
+    scanf("%d", &novoProduto->qtd);
+    printf("\nDigite o preço: ");
+    scanf("%f", &novoProduto->preco);
+    printf("\n");
+
+    if(lista == NULL){
+      return novoProduto;
+    }else{
+      Produto *aux = lista;
+      while(aux->prox != NULL){
+      aux = aux->prox;
+      
+    }
+    aux->prox = novoProduto;
+    return lista;
+  }
+}
+void mostrarLista(Produto *lista){
+  if(lista == NULL){
+    printf("\nLista Vazia");
+    printf("\n");
+  }else{
+    Produto *aux = lista;
+    while(aux != NULL){
+      printf("\nCodigo: %d", aux->cod);
+      printf(" Descrição: %s", aux->des);
+      printf(" Quantidade: %d", aux->qtd);
+      printf(" Preco: %.2f\n", aux->preco);
+      printf("\n");
+      aux = aux->prox;
+    }
+  }
+}
+Produto* buscarProduto(Produto *lista, int codBusca){
+    Produto *aux = lista;
+    while(aux != NULL){
+      if(aux->cod == codBusca){
+        printf("\nCodigo: %d", aux->cod);
+        printf("Descrição: %s", aux->des);
+        printf("Quantidade: %d", aux->qtd);
+        printf("Preco: %.2f", aux->preco);
+        printf("\n");
+          return aux;
+      }
+      aux = aux->prox;
+    }
+  printf("\nProduto nao encontrada\n");
+  return NULL;
+}
+
+Produto* excluir(Produto *lista, int codBusca){
+  Produto *atual = lista;
+  Produto *anterior = NULL;
+
+  while(atual != NULL && atual->cod != codBusca){
+  anterior = atual;
+  atual = atual->prox;
+  }
+  if(atual != NULL){
+    if(anterior != NULL){
+      anterior->prox = atual->prox;
+    
+    }else{
+      lista = atual->prox;
+    }
+    free(atual);
+    printf("\nRemovido com sucesso");
+    printf("\n");
+  }else{
+    printf("\nProduto não encontrada");
+    printf("\n");
+  }
+  return lista;
+}
+
+void liberarLista(Produto *lista){
+  Produto *atual = lista;
+  Produto *prox;
+
+  while(atual != NULL){
+    prox = atual->prox;
+    free(atual);
+    atual = prox;
+  }
+  
+}
+int main(){
+  int opcao;
+  int codBusca;
+  Produto *encontrada;
+  Produto *lista = criarListaVazia();
+  
+  do{
+    printf("digite 1 para Adicionar um produto no estoque: ");
+    printf("\ndigite 2 para Mostrar todos os produtos: ");
+    printf("\ndigite 3 para Pesquisar um Produto:");
+    printf("\ndigite 4 para Excluir um Produto: ");
+    printf("\ndigite 0 para sair: ");
+    fflush(stdin);
+    scanf("%d", &opcao);
+    switch(opcao){
+      case 1:
+        lista = adicionar(lista);
+      break;
+      case 2:
+        mostrarLista(lista);
+      break;
+      case 3:
+        printf("\nDigite o codigo a ser buscado: ");
+        scanf("%d", &codBusca);
+        encontrada = buscarProduto(lista, codBusca);
+      break;
+      case 4:
+        printf("\nDigite o codigo a ser excluido: ");
+        scanf("%d", &codBusca);
+        lista = excluir(lista, codBusca);
+      break;
+    }
+  }while(opcao != 0);
+ 
+  liberarLista(lista);
+  
+return 0;
+}
